@@ -33,7 +33,7 @@ export const OrdenoFilters = ({ filtroJornada, setFiltroJornada }: OrdenoFilters
                 colorScheme={filtroJornada === 'TARDE' ? 'brand' : 'gray'}
                 onClick={() => setFiltroJornada('TARDE')}
             >
-                Noche
+                Tarde
             </Button>
         </HStack>
     );

@@ -50,7 +50,7 @@ export const OrdenoItem = ({
                     </Text>
                     <HStack fontSize="xs" color="gray.400" spacing={2}>
                         <Text textTransform="capitalize" color="brand.500" fontWeight="medium">
-                            {ordeno.turno === 'MANANA' ? 'Mañana' : 'Noche'}
+                            {ordeno.turno === 'MANANA' ? 'Mañana' : 'Tarde'}
                         </Text>
                     </HStack>
                 </VStack>

@@ -186,7 +186,12 @@ export const ProfilePage = () => {
                                             <Flex justify="space-between" align="start">
                                                 <VStack align="start" spacing={0} flex="1">
                                                     <Heading size="sm" color="gray.800" wordBreak="break-word">{g.nombre}</Heading>
-                                                    <Text fontSize="10px" color="blue.500" fontWeight="bold">Acceso: {g.permiso}</Text>
+                                                    <Text fontSize="10px" color="blue.500" fontWeight="bold">
+                                                        {g.permiso === 'LECTURA' ? 'Acceso: Solo Lectura' :
+                                                            g.permiso === 'EDITAR' ? 'Acceso: Edición' :
+                                                                g.permiso === 'ELIMINAR' ? 'Acceso: Control Total' :
+                                                                    `Acceso: ${g.permiso}`}
+                                                    </Text>
                                                 </VStack>
                                                 <HStack spacing={1}>
                                                     <IconButton size="xs" icon={<FiInfo />} aria-label="Info" variant="ghost" color="blue.500" onClick={(e) => handleInfoClick(g, e)} />

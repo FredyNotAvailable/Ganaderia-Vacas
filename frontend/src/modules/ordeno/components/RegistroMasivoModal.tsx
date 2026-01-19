@@ -112,7 +112,7 @@ export const RegistroMasivoModal = ({
                                             _focus={{ boxShadow: 'none' }}
                                             h="32px"
                                         >
-                                            Noche
+                                            Tarde
                                         </Button>
                                     </HStack>
                                 </Box>

@@ -136,53 +136,58 @@ export const OrdenoPage = () => {
     const handleGuardarMasivo = async () => {
         setSubmitting(true);
         try {
-            const key = `${fechaMasiva}_${turnoActivoModal}`;
-            const changes = registroMasivoBuffer[key];
+            // Buscamos todas las jornadas que tengan cambios en el buffer
+            const keysToProcess = Object.keys(registroMasivoBuffer);
 
-            if (!changes || Object.keys(changes).length === 0) {
-                toast({ title: 'No hay cambios para guardar en esta vista', status: 'info' });
+            if (keysToProcess.length === 0) {
+                toast({ title: 'No hay cambios para guardar', status: 'info' });
                 setSubmitting(false);
                 return;
             }
 
-            const promises = Object.entries(changes).map(async ([vacaId, litrosStr]) => {
-                const fechaOrdeno = new Date(`${fechaMasiva}T12:00:00`).toISOString();
-                const litrosNum = Number(litrosStr) || 0;
+            const allPromises: Promise<any>[] = [];
 
-                const existing = ordenos.find(o => {
-                    const d = new Date(o.fecha_ordeno);
-                    const iso = new Intl.DateTimeFormat('fr-CA', { timeZone: 'America/Guayaquil' }).format(d);
-                    return o.vaca_id === vacaId && iso === fechaMasiva && o.turno === turnoActivoModal;
+            for (const key of keysToProcess) {
+                const [fecha, turno] = key.split('_');
+                const changes = registroMasivoBuffer[key];
+
+                const promises = Object.entries(changes).map(async ([vacaId, litrosStr]) => {
+                    const fechaOrdeno = new Date(`${fecha}T12:00:00`).toISOString();
+                    const litrosNum = Number(litrosStr) || 0;
+
+                    const existing = ordenos.find(o => {
+                        const d = new Date(o.fecha_ordeno);
+                        const iso = new Intl.DateTimeFormat('fr-CA', { timeZone: 'America/Guayaquil' }).format(d);
+                        return o.vaca_id === vacaId && iso === fecha && o.turno === turno as any;
+                    });
+
+                    const dto: CreateOrdenoDTO = {
+                        vaca_id: vacaId,
+                        ganaderia_id: ganaderia!.ganaderia_id,
+                        fecha_ordeno: fechaOrdeno,
+                        turno: turno as 'MANANA' | 'TARDE',
+                        litros: litrosNum
+                    };
+
+                    if (existing) {
+                        if (existing.litros !== litrosNum) {
+                            const updated = await ordenoService.updateOrdeno(existing.ordeno_id, dto);
+                            updateOrdeno(updated);
+                        }
+                    } else if (litrosNum > 0) {
+                        const created = await ordenoService.createOrdeno(dto);
+                        addOrdeno(created);
+                    }
                 });
 
-                const dto: CreateOrdenoDTO = {
-                    vaca_id: vacaId,
-                    ganaderia_id: ganaderia!.ganaderia_id,
-                    fecha_ordeno: fechaOrdeno,
-                    turno: turnoActivoModal,
-                    litros: litrosNum
-                };
+                allPromises.push(...promises);
+            }
 
-                if (existing) {
-                    if (existing.litros !== litrosNum) {
-                        const updated = await ordenoService.updateOrdeno(existing.ordeno_id, dto);
-                        updateOrdeno(updated);
-                    }
-                } else if (litrosNum > 0) {
-                    const created = await ordenoService.createOrdeno(dto);
-                    addOrdeno(created);
-                }
-            });
+            await Promise.all(allPromises);
 
-            await Promise.all(promises);
+            setRegistroMasivoBuffer({});
 
-            setRegistroMasivoBuffer(prev => {
-                const copy = { ...prev };
-                delete copy[key];
-                return copy;
-            });
-
-            toast({ title: 'Registros guardados con éxito', status: 'success' });
+            toast({ title: 'Todos los registros guardados con éxito', status: 'success' });
             onClose();
         } catch (error: any) {
             toast({ title: 'Error al guardar', description: error.message, status: 'error' });
@@ -248,8 +253,7 @@ export const OrdenoPage = () => {
     };
 
     const isLoading = loadingGanaderia || ordenosLoading;
-    const currentViewKey = `${fechaMasiva}_${turnoActivoModal}`;
-    const hasChangesInView = !!registroMasivoBuffer[currentViewKey] && Object.keys(registroMasivoBuffer[currentViewKey]).length > 0;
+    const hasChangesMasivo = Object.keys(registroMasivoBuffer).length > 0;
 
     const hasChangesEdit = ordenoToEdit && ordenos.find(o => o.ordeno_id === ordenoToEdit.ordeno_id)?.litros !== Number(ordenoToEdit.litros);
 
@@ -291,7 +295,7 @@ export const OrdenoPage = () => {
                 handleInputChange={handleInputChange}
                 handleGuardarMasivo={handleGuardarMasivo}
                 submitting={submitting}
-                hasChangesInView={hasChangesInView}
+                hasChangesInView={hasChangesMasivo}
             />
 
             <EditOrdenoModal

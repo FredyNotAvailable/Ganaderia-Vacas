@@ -92,7 +92,7 @@ export const MainLayout = () => {
                                                 fontSize="md"
                                                 noOfLines={1}
                                                 // maxW removed to allow full usage, or kept for text truncation
-                                                maxW={{ base: "calc(100% - 30px)", md: "200px" }}
+                                                maxW={{ base: "calc(100% - 30px)", md: "500px" }}
                                                 textAlign="left"
                                             >
                                                 {ganaderia ? ganaderia.nombre : 'Seleccionar'}

@@ -1,15 +1,13 @@
 import { Heading, Text, Grid, GridItem, VStack, HStack, Icon, Flex, Spinner, Box, Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react';
 import { MotionBox } from '../../../shared/ui/MotionBox';
-import { FiDatabase, FiDroplet, FiActivity, FiArrowRight, FiUsers, FiChevronDown } from 'react-icons/fi';
+import { FiDatabase, FiDroplet, FiActivity, FiChevronDown } from 'react-icons/fi';
 import { useGanaderia } from '../../../shared/context/GanaderiaContext';
-import { useFincaActiva } from '../../../shared/hooks/useFincaActiva';
 import { useMemo, useState } from 'react';
 
 type Periodo = 'HOY' | 'SEMANA' | 'MES' | 'ANO';
 
 export const DashboardPage = () => {
-    const { vacas, ordenos, loading, vacasLoading, ordenosLoading, ganaderia } = useGanaderia();
-    const { fincasVinculadas, cambiarFinca } = useFincaActiva();
+    const { vacas, ordenos, loading, vacasLoading, ordenosLoading } = useGanaderia();
     const [selectedPeriod, setSelectedPeriod] = useState<Periodo>('HOY');
 
     const stats = useMemo(() => {
@@ -140,45 +138,6 @@ export const DashboardPage = () => {
                             </GridItem>
                         </Grid>
 
-                        {/* Fincas Vinculadas Section */}
-                        {fincasVinculadas.length > 0 && (
-                            <VStack align="stretch" spacing={3} pt={2}>
-                                <HStack justify="space-between">
-                                    <Heading size="md" color="gray.800" fontWeight="bold">Ganaderías Compartidas</Heading>
-                                    <Icon as={FiUsers} color="blue.400" />
-                                </HStack>
-                                <HStack spacing={4} overflowX="auto" pb={2} px={1} sx={{
-                                    '&::-webkit-scrollbar': { height: '4px' },
-                                    '&::-webkit-scrollbar-track': { bg: 'transparent' },
-                                    '&::-webkit-scrollbar-thumb': { bg: 'gray.200', borderRadius: 'full' },
-                                }}>
-                                    {fincasVinculadas.map(f => (
-                                        <Box
-                                            key={f.ganaderia_id}
-                                            minW="200px"
-                                            bg="white"
-                                            p={4}
-                                            borderRadius="2xl"
-                                            shadow="sm"
-                                            border="1px solid"
-                                            borderColor={ganaderia?.ganaderia_id === f.ganaderia_id ? "blue.400" : "gray.50"}
-                                            onClick={() => cambiarFinca(f.ganaderia_id)}
-                                            cursor="pointer"
-                                            _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
-                                            transition="all 0.2s"
-                                        >
-                                            <VStack align="start" spacing={1}>
-                                                <Text fontWeight="bold" fontSize="sm" color="gray.800" noOfLines={1}>{f.nombre}</Text>
-                                                <HStack justify="space-between" w="full">
-                                                    <Text fontSize="10px" color="blue.500" fontWeight="bold">Acceso: {f.permiso}</Text>
-                                                    <Icon as={FiArrowRight} size={3} color="gray.300" />
-                                                </HStack>
-                                            </VStack>
-                                        </Box>
-                                    ))}
-                                </HStack>
-                            </VStack>
-                        )}
 
                         <Heading size="md" color="gray.800" fontWeight="bold" pt={4}>Actividad Reciente</Heading>
 
