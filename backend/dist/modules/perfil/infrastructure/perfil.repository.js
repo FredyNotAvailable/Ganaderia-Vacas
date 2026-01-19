@@ -19,6 +19,16 @@ class SupabasePerfilRepository {
         }
         return data;
     }
+    async create(perfil) {
+        const { data, error } = await supabase_client_1.supabase
+            .from(this.table)
+            .insert(perfil)
+            .select()
+            .single();
+        if (error)
+            throw new Error(error.message);
+        return data;
+    }
     async update(userId, perfil) {
         const { data, error } = await supabase_client_1.supabase
             .from(this.table)

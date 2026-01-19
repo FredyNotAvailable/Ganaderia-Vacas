@@ -12,5 +12,8 @@ class UpdatePerfilUseCase {
     async getProfile(userId) {
         return await this.perfilRepository.getByUserId(userId);
     }
+    async createProfile(data) {
+        return await this.perfilRepository.create(data);
+    }
 }
 exports.UpdatePerfilUseCase = UpdatePerfilUseCase;

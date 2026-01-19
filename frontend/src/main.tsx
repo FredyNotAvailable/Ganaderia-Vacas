@@ -7,7 +7,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme} toastOptions={{ defaultOptions: { position: 'top', isClosable: true, duration: 3000 } }}>
       <App />
     </ChakraProvider>
   </StrictMode>,

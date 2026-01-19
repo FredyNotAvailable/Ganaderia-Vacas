@@ -8,11 +8,11 @@ export class SupabaseOrdenoRepository implements IOrdenoRepository {
         const { data, error } = await supabase
             .from(this.table)
             .insert(ordeno)
-            .select()
+            .select('*, vaca:vacas(nombre)')
             .single();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as unknown as Ordeno;
     }
 
     async listByGanaderia(ganaderiaId: string): Promise<Ordeno[]> {
@@ -20,7 +20,7 @@ export class SupabaseOrdenoRepository implements IOrdenoRepository {
             .from(this.table)
             .select('*, vaca:vacas(nombre)')
             .eq('ganaderia_id', ganaderiaId)
-            .order('fecha', { ascending: false });
+            .order('fecha_ordeno', { ascending: false });
 
         if (error) throw new Error(error.message);
         return data || [];
@@ -31,11 +31,11 @@ export class SupabaseOrdenoRepository implements IOrdenoRepository {
             .from(this.table)
             .update(ordeno)
             .eq('ordeno_id', id)
-            .select()
+            .select('*, vaca:vacas(nombre)')
             .single();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as unknown as Ordeno;
     }
 
     async delete(id: string): Promise<void> {

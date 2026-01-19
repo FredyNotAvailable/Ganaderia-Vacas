@@ -8,7 +8,7 @@ import { OrdenoPage } from './modules/ordeno/pages/OrdenoPage';
 import { AuthProvider } from './modules/auth/AuthContext';
 import { ProtectedRoute } from './modules/auth/ProtectedRoute';
 import { PublicRoute } from './modules/auth/PublicRoute';
-import { ProfilePage } from './modules/auth/pages/ProfilePage';
+import { ProfilePage } from './modules/auth/pages/ProfileInfoPage';
 import { GanaderiaProvider } from './shared/context/GanaderiaContext';
 
 function App() {

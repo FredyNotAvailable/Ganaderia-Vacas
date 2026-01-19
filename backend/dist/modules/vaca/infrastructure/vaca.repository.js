@@ -36,5 +36,13 @@ class SupabaseVacaRepository {
             throw new Error(error.message);
         return data;
     }
+    async delete(id) {
+        const { error } = await supabase_client_1.supabase
+            .from(this.table)
+            .delete()
+            .eq('vaca_id', id);
+        if (error)
+            throw new Error(error.message);
+    }
 }
 exports.SupabaseVacaRepository = SupabaseVacaRepository;

@@ -6,6 +6,7 @@ export interface Vaca {
     raza?: string;
     fecha_nacimiento?: string;
     estado?: string;
+    tipo: 'VACA' | 'NOVILLA' | 'TERNERA';
     created_at?: string;
 }
 

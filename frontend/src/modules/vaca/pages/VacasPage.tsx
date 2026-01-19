@@ -6,18 +6,23 @@ import {
 import { FiPlus } from 'react-icons/fi';
 import { VacaCard } from '../components/VacaCard';
 import { VacaForm } from '../components/VacaForm';
+import { VacaDetailModal } from '../components/VacaDetailModal';
 import { MotionBox } from '../../../shared/ui/MotionBox';
 import { useState, useRef } from 'react';
 import { type Vaca } from '../models';
 import { useGanaderia } from '../../../shared/context/GanaderiaContext';
 import { vacaService } from '../services/vaca.service';
+import { usePermisosFinca } from '../../../shared/hooks/usePermisosFinca';
 
 export const VacasPage = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+    const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure(); // New Modal State
+
     const cancelRef = useRef<HTMLButtonElement>(null);
     const [selectedVaca, setSelectedVaca] = useState<Vaca | null>(null);
     const [vacaToDelete, setVacaToDelete] = useState<Vaca | null>(null);
+    const [vacaForDetail, setVacaForDetail] = useState<Vaca | null>(null); // New State
     const [deleting, setDeleting] = useState(false);
     const toast = useToast();
 
@@ -29,6 +34,8 @@ export const VacasPage = () => {
         removeVaca
     } = useGanaderia();
 
+    const { can } = usePermisosFinca();
+
     const [categoria, setCategoria] = useState('TODAS');
     const categories = ['TODAS', 'VACAS', 'TERNERAS', 'NOVILLAS'];
 
@@ -37,14 +44,21 @@ export const VacasPage = () => {
         onOpen();
     };
 
-    const handleEdit = (vaca: Vaca) => {
+    const handleEdit = (vaca: Vaca, e?: React.MouseEvent) => {
+        e?.stopPropagation();
         setSelectedVaca(vaca);
         onOpen();
     };
 
-    const handleDelete = (vaca: Vaca) => {
+    const handleDelete = (vaca: Vaca, e?: React.MouseEvent) => {
+        e?.stopPropagation();
         setVacaToDelete(vaca);
         onDeleteOpen();
+    };
+
+    const handleCardClick = (vaca: Vaca) => {
+        setVacaForDetail(vaca);
+        onDetailOpen();
     };
 
     const confirmDelete = async () => {
@@ -82,17 +96,21 @@ export const VacasPage = () => {
     // Filtered Vacas
     const filteredVacas = vacas.filter(vaca => {
         if (categoria === 'TODAS') return true;
-        // Basic match for now, assuming case sensitive or map it
-        return (vaca as any).categoria === categoria;
+        const map: Record<string, string> = {
+            'VACAS': 'VACA',
+            'TERNERAS': 'TERNERA',
+            'NOVILLAS': 'NOVILLA'
+        };
+        return vaca.tipo === map[categoria];
     });
 
     if (isLoading && vacas.length === 0) return <Flex justify="center" p={10}><Spinner size="xl" color="brand.500" /></Flex>;
 
     return (
         <MotionBox initial={{ opacity: 0 }} animate={{ opacity: 1 }} w="full" px={{ base: 1, md: 0 }}>
-            <Flex justify="space-between" align="center" mb={6} direction={{ base: 'column', sm: 'row' }} gap={4}>
-                <Box alignSelf="start">
-                    <Heading size="lg" color="gray.800" fontWeight="bold" letterSpacing="tight" mb={1}>Mis Vacas</Heading>
+            <Flex justify="space-between" align="center" mb={6}>
+                <Box>
+                    <Heading size="lg" color="gray.800" fontWeight="bold" letterSpacing="tight">Mis Vacas</Heading>
                     <Text fontSize="sm" color="gray.400">Gestión de ganado</Text>
                 </Box>
                 <Button
@@ -103,8 +121,8 @@ export const VacasPage = () => {
                     borderRadius="xl"
                     boxShadow="sm"
                     onClick={handleCreate}
-                    isDisabled={!ganaderia}
-                    w={{ base: 'full', sm: 'auto' }}
+                    isDisabled={!ganaderia || !can('crear')}
+                    display={can('crear') ? 'flex' : 'none'}
                 >
                     Nueva
                 </Button>
@@ -154,13 +172,14 @@ export const VacasPage = () => {
                     )}
                 </Flex>
             ) : (
-                <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={5} minChildWidth={{ base: 'full', sm: '300px' }}>
+                <SimpleGrid columns={{ base: 2, md: 4, lg: 4 }} spacing={{ base: 3, sm: 5 }}>
                     {filteredVacas.map(vaca => (
                         <VacaCard
                             key={vaca.vaca_id}
                             vaca={vaca}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
+                            onEdit={can('editar') ? handleEdit : undefined}
+                            onDelete={can('eliminar') ? handleDelete : undefined}
+                            onClick={handleCardClick}
                         />
                     ))}
                 </SimpleGrid>
@@ -171,6 +190,12 @@ export const VacasPage = () => {
                 onClose={onClose}
                 vacaToEdit={selectedVaca}
                 ganaderiaId={ganaderia?.ganaderia_id}
+            />
+
+            <VacaDetailModal
+                isOpen={isDetailOpen}
+                onClose={onDetailClose}
+                vaca={vacaForDetail}
             />
 
             {/* Delete Confirmation Dialog */}

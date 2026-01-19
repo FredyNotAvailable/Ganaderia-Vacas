@@ -2,16 +2,21 @@
 -- MODULO: VACAS
 -- =========================
 
-CREATE TABLE vacas (
+CREATE TABLE IF NOT EXISTS vacas (
   vaca_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   ganaderia_id uuid NOT NULL REFERENCES ganaderias(ganaderia_id),
   codigo text NOT NULL,
   nombre text,
   raza text,
   fecha_nacimiento date,
+  tipo text NOT NULL CHECK (tipo IN ('VACA', 'NOVILLA', 'TERNERA')),
   estado text DEFAULT 'ACTIVA',
   created_at timestamptz DEFAULT now()
 );
+
+-- =========================
+-- ROW LEVEL SECURITY
+-- =========================
 
 ALTER TABLE vacas ENABLE ROW LEVEL SECURITY;
 
@@ -21,9 +26,9 @@ ON vacas
 FOR SELECT
 USING (
   ganaderia_id IN (
-    SELECT ganaderia_id
-    FROM ganaderias
-    WHERE propietario_user_id = current_setting('jwt.claims.user_id', true)::uuid
+    SELECT g.ganaderia_id
+    FROM ganaderias g
+    WHERE g.propietario_user_id = auth.uid()
   )
 );
 
@@ -33,9 +38,9 @@ ON vacas
 FOR INSERT
 WITH CHECK (
   ganaderia_id IN (
-    SELECT ganaderia_id
-    FROM ganaderias
-    WHERE propietario_user_id = current_setting('jwt.claims.user_id', true)::uuid
+    SELECT g.ganaderia_id
+    FROM ganaderias g
+    WHERE g.propietario_user_id = auth.uid()
   )
 );
 
@@ -45,8 +50,8 @@ ON vacas
 FOR UPDATE
 USING (
   ganaderia_id IN (
-    SELECT ganaderia_id
-    FROM ganaderias
-    WHERE propietario_user_id = current_setting('jwt.claims.user_id', true)::uuid
+    SELECT g.ganaderia_id
+    FROM ganaderias g
+    WHERE g.propietario_user_id = auth.uid()
   )
 );

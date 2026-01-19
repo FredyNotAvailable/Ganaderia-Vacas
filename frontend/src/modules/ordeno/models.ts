@@ -2,7 +2,7 @@ export interface Ordeno {
     ordeno_id: string; // Matches Backend
     vaca_id: string;
     ganaderia_id: string;
-    fecha: string; // ISO Date
+    fecha_ordeno: string; // ISO Date or Timestamptz
     turno?: 'MANANA' | 'TARDE';
     litros: number;
     created_at?: string;
@@ -16,7 +16,7 @@ export interface Ordeno {
 export interface CreateOrdenoDTO {
     vaca_id: string;
     ganaderia_id: string;
-    fecha: string;
+    fecha_ordeno: string;
     turno: 'MANANA' | 'TARDE';
     litros: number;
 }

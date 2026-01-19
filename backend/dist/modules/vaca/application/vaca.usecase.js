@@ -14,5 +14,8 @@ class VacaUseCase {
     async updateVaca(id, vaca) {
         return await this.vacaRepository.update(id, vaca);
     }
+    async deleteVaca(id) {
+        return await this.vacaRepository.delete(id);
+    }
 }
 exports.VacaUseCase = VacaUseCase;

@@ -34,6 +34,32 @@ class OrdenoController {
                 return res.status(500).json({ error: error.message });
             }
         };
+        this.update = async (req, res) => {
+            try {
+                const { id } = req.params;
+                console.log(`[ORDENO] Updating ordeno: ${id}`);
+                const updated = await this.ordenoUseCase.updateOrdeno(id, req.body);
+                console.log(`[ORDENO] Ordeno updated successfully: ${id}`);
+                return res.json(updated);
+            }
+            catch (error) {
+                console.error(`[ORDENO_ERROR] Failed to update ordeno ${req.params.id}: ${error.message}`);
+                return res.status(500).json({ error: error.message });
+            }
+        };
+        this.delete = async (req, res) => {
+            try {
+                const { id } = req.params;
+                console.log(`[ORDENO] Deleting ordeno: ${id}`);
+                await this.ordenoUseCase.deleteOrdeno(id);
+                console.log(`[ORDENO] Ordeno deleted successfully: ${id}`);
+                return res.status(204).send();
+            }
+            catch (error) {
+                console.error(`[ORDENO_ERROR] Failed to delete ordeno ${req.params.id}: ${error.message}`);
+                return res.status(500).json({ error: error.message });
+            }
+        };
     }
 }
 exports.OrdenoController = OrdenoController;

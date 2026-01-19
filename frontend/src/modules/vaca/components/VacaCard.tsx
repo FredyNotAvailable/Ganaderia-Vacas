@@ -5,11 +5,14 @@ import { MotionBox } from '../../../shared/ui/MotionBox';
 
 interface VacaCardProps {
     vaca: Vaca;
-    onEdit?: (vaca: Vaca) => void;
-    onDelete?: (vaca: Vaca) => void;
+    onEdit?: (vaca: Vaca, e: React.MouseEvent) => void;
+    onDelete?: (vaca: Vaca, e: React.MouseEvent) => void;
+    onClick?: (vaca: Vaca) => void;
 }
 
-export const VacaCard = ({ vaca, onEdit, onDelete }: VacaCardProps) => {
+export const VacaCard = ({ vaca, onEdit, onDelete, onClick }: VacaCardProps) => {
+    // ... (statusConfig logic remains same)
+
     const statusConfig = {
         ACTIVA: { color: 'brand', label: 'Activa', bg: 'brand.50' },
         VENDIDA: { color: 'gray', label: 'Vendida', bg: 'gray.100' },
@@ -31,9 +34,11 @@ export const VacaCard = ({ vaca, onEdit, onDelete }: VacaCardProps) => {
             borderRadius="2xl"
             overflow="hidden"
             boxShadow="sm"
-            whileHover={{ y: -2, boxShadow: 'md' }}
+            whileHover={{ y: -2, boxShadow: 'md', cursor: 'pointer' }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
             p="5"
+            onClick={() => onClick?.(vaca)}
         >
             <HStack justify="space-between" align="start" mb={4}>
                 <VStack align="start" spacing={0} flex="1">
@@ -54,27 +59,32 @@ export const VacaCard = ({ vaca, onEdit, onDelete }: VacaCardProps) => {
                             {config.label}
                         </Badge>
                     </HStack>
-                    <Text fontSize="sm" color="gray.400" fontWeight="medium">
-                        {vaca.raza}
-                    </Text>
+                    <HStack spacing={2} align="center">
+                        <Badge variant="subtle" colorScheme="blue" fontSize="9px" borderRadius="full" px={2}>
+                            {vaca.tipo}
+                        </Badge>
+                        {/* Breed removed as requested */}
+                    </HStack>
                 </VStack>
 
-                <Menu isLazy>
-                    <MenuButton
-                        as={IconButton}
-                        icon={<FiMoreVertical />}
-                        variant="ghost"
-                        size="sm"
-                        aria-label="Opciones"
-                        color="gray.400"
-                        _hover={{ color: 'gray.600', bg: 'gray.50' }}
-                        borderRadius="full"
-                    />
-                    <MenuList borderRadius="xl" shadow="lg" border="none" zIndex={10}>
-                        <MenuItem icon={<FiEdit />} onClick={() => onEdit?.(vaca)} fontSize="sm">Editar</MenuItem>
-                        <MenuItem icon={<FiTrash />} color="red.500" onClick={() => onDelete?.(vaca)} fontSize="sm">Eliminar</MenuItem>
-                    </MenuList>
-                </Menu>
+                {(onEdit || onDelete) && (
+                    <Menu isLazy>
+                        <MenuButton
+                            as={IconButton}
+                            icon={<FiMoreVertical />}
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Opciones"
+                            color="gray.400"
+                            _hover={{ color: 'gray.600', bg: 'gray.50' }}
+                            borderRadius="full"
+                        />
+                        <MenuList borderRadius="xl" shadow="lg" border="none" zIndex={10}>
+                            {onEdit && <MenuItem icon={<FiEdit />} onClick={(e) => onEdit?.(vaca, e)} fontSize="sm">Editar</MenuItem>}
+                            {onDelete && <MenuItem icon={<FiTrash />} color="red.500" onClick={(e) => onDelete?.(vaca, e)} fontSize="sm">Eliminar</MenuItem>}
+                        </MenuList>
+                    </Menu>
+                )}
             </HStack>
 
             <HStack pt={3} borderTop="1px solid" borderColor="gray.50" justify="space-between">

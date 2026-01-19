@@ -10,6 +10,17 @@ interface GanaderiaContextType {
     loading: boolean;
     refreshGanaderia: () => Promise<void>;
     selectGanaderia: (id: string) => void;
+    // Permisos
+    permiso: string | null;
+    esPropietario: boolean;
+    rolDetalle?: {
+        id: string;
+        nombre: string;
+        codigo: string;
+    };
+    // Groups
+    misGanaderias: Ganaderia[];
+    ganaderiasVinculadas: Ganaderia[];
     // Vacas Sync
     vacas: Vaca[];
     vacasLoading: boolean;
@@ -47,10 +58,12 @@ export const GanaderiaProvider = ({ children }: { children: ReactNode }) => {
             setLoading(false);
             setGanaderias([]);
             setSelectedGanaderia(null);
+            setVacas([]);
+            setOrdenos([]);
             return;
         }
 
-        // Only show loading if we have no data yet
+        // Si ya tenemos datos, no mostramos el spinner global para evitar parpadeos
         if (ganaderias.length === 0) setLoading(true);
 
         try {
@@ -59,9 +72,23 @@ export const GanaderiaProvider = ({ children }: { children: ReactNode }) => {
             setGanaderias(list);
 
             if (list.length > 0) {
-                // If nothing selected or selection no longer in list, pick first
-                if (!selectedGanaderia || !list.find(g => g.ganaderia_id === selectedGanaderia.ganaderia_id)) {
-                    setSelectedGanaderia(list[0]);
+                const savedId = localStorage.getItem('ganaderiaActivaId');
+                const savedGanaderia = list.find(g => g.ganaderia_id === savedId);
+
+                // Solo actualizar si no hay nada seleccionado o si lo que estaba seleccionado ya no es válido
+                const currentId = selectedGanaderia?.ganaderia_id;
+                const stillExists = currentId ? list.find(g => g.ganaderia_id === currentId) : null;
+
+                if (!currentId || !stillExists) {
+                    if (savedGanaderia) {
+                        setSelectedGanaderia(savedGanaderia);
+                    } else {
+                        const own = list.find(g => g.rol === 'DUEÑO');
+                        setSelectedGanaderia(own || list[0]);
+                    }
+                } else if (stillExists) {
+                    // Actualizar el objeto pero mantener la selección estable
+                    setSelectedGanaderia(stillExists);
                 }
             } else {
                 setSelectedGanaderia(null);
@@ -124,6 +151,7 @@ export const GanaderiaProvider = ({ children }: { children: ReactNode }) => {
         const found = ganaderias.find(g => g.ganaderia_id === id);
         if (found && found.ganaderia_id !== selectedGanaderia?.ganaderia_id) {
             setSelectedGanaderia(found);
+            localStorage.setItem('ganaderiaActivaId', id);
             // reset caches to trigger fresh load for new ganaderia
             setVacas([]);
             setOrdenos([]);
@@ -132,10 +160,11 @@ export const GanaderiaProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         fetchGanaderias();
-    }, [user]);
+    }, [user?.id]);
 
     useEffect(() => {
         if (selectedGanaderia) {
+            localStorage.setItem('ganaderiaActivaId', selectedGanaderia.ganaderia_id);
             fetchVacas();
             fetchOrdenos();
         }
@@ -148,6 +177,11 @@ export const GanaderiaProvider = ({ children }: { children: ReactNode }) => {
             loading,
             refreshGanaderia: fetchGanaderias,
             selectGanaderia,
+            permiso: selectedGanaderia?.permiso || null,
+            esPropietario: selectedGanaderia?.rol === 'DUEÑO',
+            rolDetalle: selectedGanaderia?.rol_detalle,
+            misGanaderias: ganaderias.filter(g => g.rol === 'DUEÑO'),
+            ganaderiasVinculadas: ganaderias.filter(g => g.rol === 'COMPARTIDA'),
             vacas,
             vacasLoading,
             refreshVacas: fetchVacas,

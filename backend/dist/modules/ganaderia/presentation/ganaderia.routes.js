@@ -14,4 +14,6 @@ const ganaderiaUseCase = new ganaderia_usecase_1.GanaderiaUseCase(ganaderiaRepo)
 const ganaderiaController = new ganaderia_controller_1.GanaderiaController(ganaderiaUseCase);
 // Routes
 ganaderiaRouter.get('/', auth_middleware_1.authMiddleware, ganaderiaController.getGanaderia);
-ganaderiaRouter.put('/', auth_middleware_1.authMiddleware, ganaderiaController.updateGanaderia);
+ganaderiaRouter.post('/', auth_middleware_1.authMiddleware, ganaderiaController.createGanaderia);
+ganaderiaRouter.put('/:id', auth_middleware_1.authMiddleware, ganaderiaController.updateGanaderia);
+ganaderiaRouter.delete('/:id', auth_middleware_1.authMiddleware, ganaderiaController.deleteGanaderia);

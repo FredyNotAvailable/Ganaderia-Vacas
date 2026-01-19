@@ -6,6 +6,8 @@ const auth_middleware_1 = require("../../../shared/middleware/auth.middleware");
 const vaca_repository_1 = require("../infrastructure/vaca.repository");
 const vaca_usecase_1 = require("../application/vaca.usecase");
 const vaca_controller_1 = require("./vaca.controller");
+const authorize_middleware_1 = require("../../../shared/middleware/authorize.middleware");
+const permisos_1 = require("../../../shared/constants/permisos");
 const vacaRouter = (0, express_1.Router)();
 exports.vacaRouter = vacaRouter;
 // Dependencies
@@ -13,6 +15,7 @@ const vacaRepo = new vaca_repository_1.SupabaseVacaRepository();
 const vacaUseCase = new vaca_usecase_1.VacaUseCase(vacaRepo);
 const vacaController = new vaca_controller_1.VacaController(vacaUseCase);
 // Routes
-vacaRouter.post('/', auth_middleware_1.authMiddleware, vacaController.create);
-vacaRouter.get('/', auth_middleware_1.authMiddleware, vacaController.list);
-vacaRouter.put('/:id', auth_middleware_1.authMiddleware, vacaController.update);
+vacaRouter.post('/', auth_middleware_1.authMiddleware, (0, authorize_middleware_1.authorize)(permisos_1.PERMISOS.CREAR), vacaController.create);
+vacaRouter.get('/', auth_middleware_1.authMiddleware, (0, authorize_middleware_1.authorize)(permisos_1.PERMISOS.LECTURA), vacaController.list);
+vacaRouter.put('/:id', auth_middleware_1.authMiddleware, (0, authorize_middleware_1.authorize)(permisos_1.PERMISOS.EDITAR), vacaController.update);
+vacaRouter.delete('/:id', auth_middleware_1.authMiddleware, (0, authorize_middleware_1.authorize)(permisos_1.PERMISOS.ELIMINAR), vacaController.delete);

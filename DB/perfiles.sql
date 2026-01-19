@@ -10,6 +10,12 @@ CREATE TABLE perfiles (
   nombre text NOT NULL,
   email text UNIQUE NOT NULL,
   telefono text,
+
+  -- Rol a nivel sistema (NO por ganadería)
+  rol_sistema text NOT NULL
+    CHECK (rol_sistema IN ('SUPERADMIN', 'SOPORTE', 'USUARIO'))
+    DEFAULT 'USUARIO',
+
   created_at timestamptz DEFAULT now()
 );
 

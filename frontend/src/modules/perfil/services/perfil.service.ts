@@ -6,6 +6,8 @@ export interface Perfil {
     nombre: string;
     email: string;
     telefono?: string;
+    rol_sistema?: 'SUPERADMIN' | 'SOPORTE' | 'USUARIO';
+    created_at?: string;
     updated_at: string;
 }
 

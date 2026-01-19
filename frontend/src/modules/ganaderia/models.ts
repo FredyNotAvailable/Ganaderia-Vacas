@@ -3,6 +3,13 @@ export interface Ganaderia {
     nombre: string;
     ubicacion?: string;
     propietario_user_id: string;
+    rol?: 'DUEÑO' | 'COMPARTIDA';
+    permiso?: string;
+    rol_detalle?: {
+        id: string;
+        nombre: string;
+        codigo: string;
+    };
     created_at?: string;
 }
 

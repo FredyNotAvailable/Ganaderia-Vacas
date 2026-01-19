@@ -47,6 +47,19 @@ class VacaController {
                 return res.status(500).json({ error: error.message });
             }
         };
+        this.delete = async (req, res) => {
+            try {
+                const { id } = req.params;
+                console.log(`[VACA] Deleting vaca: ${id}`);
+                await this.vacaUseCase.deleteVaca(id);
+                console.log(`[VACA] Vaca deleted successfully: ${id}`);
+                return res.status(204).send();
+            }
+            catch (error) {
+                console.error(`[VACA_ERROR] Failed to delete vaca ${req.params.id}: ${error.message}`);
+                return res.status(500).json({ error: error.message });
+            }
+        };
     }
 }
 exports.VacaController = VacaController;

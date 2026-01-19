@@ -1,11 +1,17 @@
-import { Box, Flex, Icon, Text, Container, VStack, Link, Menu, MenuButton, MenuList, MenuItem, MenuDivider, Button } from '@chakra-ui/react';
-import { NavLink as RouterLink, Outlet } from 'react-router-dom';
-import { FiHome, FiDatabase, FiDroplet, FiUser, FiAlertCircle, FiChevronDown, FiCheck, FiPlus } from 'react-icons/fi';
+import { Box, Flex, Icon, Text, Container, VStack, Link, Menu, MenuButton, MenuList, MenuItem, MenuDivider, Button, HStack } from '@chakra-ui/react';
+import { NavLink as RouterLink, Outlet, useLocation } from 'react-router-dom';
+import { FiHome, FiDatabase, FiDroplet, FiUser, FiAlertCircle, FiChevronDown, FiPlus } from 'react-icons/fi';
 import { MotionBox } from '../ui/MotionBox';
 import { useGanaderia } from '../context/GanaderiaContext';
+import { useFincaActiva } from '../hooks/useFincaActiva';
 
 export const MainLayout = () => {
-    const { ganaderia, loading, ganaderias, selectGanaderia } = useGanaderia();
+    const { ganaderia, loading } = useGanaderia();
+    const { misFincas, fincasVinculadas, cambiarFinca } = useFincaActiva();
+    const location = useLocation();
+
+    // Hide selector in profile page
+    const showSelector = !location.pathname.startsWith('/perfil');
 
     return (
         <Flex minH="100vh" bg="gray.50" overflowX="hidden">
@@ -38,72 +44,143 @@ export const MainLayout = () => {
                 minW="0" // Critical for Flexbox not to overflow
                 ml={{ base: 0, md: '64' }} // Offset for sidebar on desktop
                 pb={{ base: '32', md: '8' }} // Increased padding for bottom nav clearance
-                pt={{ base: '4', md: '8' }}
+                pt={{ base: showSelector ? 0 : 4, md: '8' }}
             >
                 <Container maxW={{ base: '100%', md: 'container.xl' }} px={{ base: 2, md: 6 }}>
                     {/* Global Farm Selector Header */}
-                    <Flex
-                        justify="space-between"
-                        align="center"
-                        mb={6}
-                        mt={{ base: 2, md: 0 }}
-                        bg={{ base: 'white', md: 'transparent' }}
-                        p={{ base: 3, md: 0 }}
-                        borderRadius={{ base: 'xl', md: 'none' }}
-                        boxShadow={{ base: 'sm', md: 'none' }}
-                    >
-                        <Text
-                            display={{ base: 'block', md: 'none' }}
-                            fontWeight="bold"
-                            color="brand.500"
-                            fontSize="lg"
-                            noOfLines={1}
-                            flex="1"
-                            mr={2}
+                    {showSelector && (
+                        <Flex
+                            justify="space-between"
+                            align="center"
+                            mb={6}
+                            mt={0}
+                            bg={{ base: 'white', md: 'transparent' }}
+                            p={{ base: 3, md: 0 }}
+                            borderRadius={{ base: 'none', md: 'none' }}
+                            boxShadow={{ base: 'sm', md: 'none' }}
+                            position={{ base: 'sticky', md: 'static' }}
+                            top={{ base: 0, md: 'auto' }}
+                            zIndex={{ base: 99, md: 'auto' }}
+                            mx={{ base: -2, md: 0 }} // Negative margin to offset Container padding on mobile
+                            px={{ base: 4, md: 0 }}
                         >
-                            {ganaderia?.nombre || 'Ganadería'}
-                        </Text>
-                        <Box display={{ base: 'none', md: 'block' }} /> {/* Spacer */}
 
-                        <Menu>
-                            <MenuButton
-                                as={Button}
-                                variant="outline"
-                                size="sm"
-                                borderRadius="lg"
-                                bg="white"
-                                _hover={{ bg: 'gray.50' }}
-                                px={{ base: 2, md: 4 }}
-                            >
-                                <Flex align="center">
-                                    <Text display={{ base: 'none', md: 'block' }} mr={2}>
-                                        {ganaderia ? ganaderia.nombre : 'Seleccionar'}
-                                    </Text>
-                                    <Icon as={FiChevronDown} />
-                                </Flex>
-                            </MenuButton>
-                            <MenuList zIndex={20} borderRadius="xl" shadow="xl">
-                                {ganaderias.map(g => (
-                                    <MenuItem
-                                        key={g.ganaderia_id}
-                                        onClick={() => selectGanaderia(g.ganaderia_id)}
-                                        borderRadius="lg"
-                                        mx={2}
-                                        mb={1}
+                            <Box display={{ base: 'none', md: 'block' }} /> {/* Spacer */}
+
+                            <HStack spacing={2} w="full">
+                                <Menu matchWidth>
+                                    <MenuButton
+                                        as={Button}
+                                        variant="ghost"
+                                        size="md"
+                                        borderRadius="2xl"
+                                        bg="white"
+                                        shadow="sm"
+                                        border="1px solid"
+                                        borderColor="gray.100"
+                                        _hover={{ shadow: 'md', bg: 'white' }}
+                                        _active={{ bg: 'white' }}
+                                        px={{ base: 4, md: 5 }}
+                                        h="45px"
+                                        w="full"
+                                        textAlign="left"
                                     >
-                                        <Flex justify="space-between" align="center" w="full">
-                                            <Text fontSize="sm">{g.nombre}</Text>
-                                            {ganaderia?.ganaderia_id === g.ganaderia_id && <Icon as={FiCheck} color="brand.500" />}
-                                        </Flex>
-                                    </MenuItem>
-                                ))}
-                                <MenuDivider />
-                                <MenuItem as={RouterLink} to="/perfil" icon={<FiPlus />} borderRadius="lg" mx={2}>
-                                    Gestionar Ganaderías
-                                </MenuItem>
-                            </MenuList>
-                        </Menu>
-                    </Flex>
+                                        <HStack spacing={3} justify="space-between" w="full">
+                                            <Text
+                                                fontWeight="bold"
+                                                color="brand.600"
+                                                fontSize="md"
+                                                noOfLines={1}
+                                                // maxW removed to allow full usage, or kept for text truncation
+                                                maxW={{ base: "calc(100% - 30px)", md: "200px" }}
+                                                textAlign="left"
+                                            >
+                                                {ganaderia ? ganaderia.nombre : 'Seleccionar'}
+                                            </Text>
+                                            <Flex
+                                                bg="gray.50"
+                                                p={1}
+                                                borderRadius="md"
+                                                border="1px solid"
+                                                borderColor="gray.200"
+                                                align="center"
+                                                justify="center"
+                                                minW="24px"
+                                            >
+                                                <Icon as={FiChevronDown} color="gray.600" boxSize={3} />
+                                            </Flex>
+                                        </HStack>
+                                    </MenuButton>
+                                    <MenuList zIndex={20} borderRadius="2xl" shadow="2xl" border="none" p={2} minW={{ base: "full", md: "220px" }}>
+                                        {/* Principales */}
+                                        {misFincas.length > 0 && (
+                                            <>
+                                                <Box px={3} py={1}>
+                                                    <Text fontSize="10px" fontWeight="bold" color="gray.400" textTransform="uppercase">Mis Ganaderías</Text>
+                                                </Box>
+                                                {misFincas.map((g: any) => {
+                                                    const isActive = ganaderia?.ganaderia_id === g.ganaderia_id;
+                                                    return (
+                                                        <MenuItem
+                                                            key={g.ganaderia_id}
+                                                            onClick={() => cambiarFinca(g.ganaderia_id)}
+                                                            borderRadius="xl"
+                                                            mx={1}
+                                                            mb={1}
+                                                            bg={isActive ? "brand.50" : "transparent"}
+                                                            color={isActive ? "brand.600" : "gray.700"}
+                                                            fontWeight={isActive ? "bold" : "medium"}
+                                                            _hover={{ bg: isActive ? "brand.100" : "gray.50" }}
+                                                        >
+                                                            <Text fontSize="sm">{g.nombre}</Text>
+                                                        </MenuItem>
+                                                    );
+                                                })}
+                                            </>
+                                        )}
+
+                                        {/* Vinculadas */}
+                                        {fincasVinculadas.length > 0 && (
+                                            <>
+                                                {misFincas.length > 0 && <MenuDivider />}
+                                                <Box px={3} py={1}>
+                                                    <Text fontSize="10px" fontWeight="bold" color="blue.400" textTransform="uppercase">Ganaderías Compartidas</Text>
+                                                </Box>
+                                                {fincasVinculadas.map((g: any) => {
+                                                    const isActive = ganaderia?.ganaderia_id === g.ganaderia_id;
+                                                    return (
+                                                        <MenuItem
+                                                            key={g.ganaderia_id}
+                                                            onClick={() => cambiarFinca(g.ganaderia_id)}
+                                                            borderRadius="xl"
+                                                            mx={1}
+                                                            mb={1}
+                                                            bg={isActive ? "blue.50" : "transparent"}
+                                                            color={isActive ? "blue.600" : "gray.700"}
+                                                            fontWeight={isActive ? "bold" : "medium"}
+                                                            _hover={{ bg: isActive ? "blue.100" : "gray.50" }}
+                                                        >
+                                                            <VStack align="start" spacing={0}>
+                                                                <Text fontSize="sm">{g.nombre}</Text>
+                                                                <Text fontSize="9px" color={isActive ? "blue.400" : "blue.500"} fontWeight="bold">
+                                                                    {g.rol_detalle ? `Rol: ${g.rol_detalle.nombre}` : `Acceso: ${g.permiso}`}
+                                                                </Text>
+                                                            </VStack>
+                                                        </MenuItem>
+                                                    );
+                                                })}
+                                            </>
+                                        )}
+
+                                        <MenuDivider />
+                                        <MenuItem as={RouterLink} to="/perfil" icon={<FiPlus />} borderRadius="lg" mx={2}>
+                                            Gestionar Ganaderías
+                                        </MenuItem>
+                                    </MenuList>
+                                </Menu>
+                            </HStack>
+                        </Flex>
+                    )}
 
                     {/* No Farm Warning Banner */}
                     {!loading && !ganaderia && (

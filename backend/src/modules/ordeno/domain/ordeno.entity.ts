@@ -2,10 +2,13 @@ export interface Ordeno {
     ordeno_id: string;
     vaca_id: string;
     ganaderia_id: string;
-    fecha: string;
+    fecha_ordeno: string;
     turno?: 'MANANA' | 'TARDE';
     litros: number;
     created_at?: string;
+    vaca?: {
+        nombre: string;
+    };
 }
 
 export interface IOrdenoRepository {
