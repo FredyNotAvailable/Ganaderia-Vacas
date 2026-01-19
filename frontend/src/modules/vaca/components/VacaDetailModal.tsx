@@ -60,7 +60,7 @@ export const VacaDetailModal = ({ isOpen, onClose, vaca }: VacaDetailModalProps)
                                 <Badge colorScheme="brand" variant="outline" fontSize="xs" borderRadius="full" px={2}>
                                     {vaca.tipo}
                                 </Badge>
-                                <StatusBadge estado={vaca.estado} />
+                                <StatusBadge estado={vaca.estado || 'ACTIVA'} />
                             </HStack>
                         </VStack>
                     </HStack>

@@ -19,7 +19,7 @@ export const VacasPage = () => {
     const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
     const { isOpen: isDetailOpen, onOpen: onDetailOpen, onClose: onDetailClose } = useDisclosure(); // New Modal State
 
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const cancelRef = useRef<any>(null);
     const [selectedVaca, setSelectedVaca] = useState<Vaca | null>(null);
     const [vacaToDelete, setVacaToDelete] = useState<Vaca | null>(null);
     const [vacaForDetail, setVacaForDetail] = useState<Vaca | null>(null); // New State

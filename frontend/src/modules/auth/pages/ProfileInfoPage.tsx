@@ -35,7 +35,7 @@ export const ProfilePage = () => {
 
     const [ganaderiaToDelete, setGanaderiaToDelete] = useState<Ganaderia | null>(null);
     const [ganaderiaForInfo, setGanaderiaForInfo] = useState<Ganaderia | null>(null);
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const cancelRef = useRef<any>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const handleCreate = () => {

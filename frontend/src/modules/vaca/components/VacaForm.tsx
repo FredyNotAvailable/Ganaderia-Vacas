@@ -31,7 +31,7 @@ export const VacaForm = ({ isOpen, onClose, vacaToEdit, ganaderiaId }: VacaFormP
     const { addVaca, updateVaca } = useGanaderia();
     const isMobile = useBreakpointValue({ base: true, md: false });
     const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const cancelRef = useRef<any>(null);
 
     useEffect(() => {
         if (vacaToEdit) {

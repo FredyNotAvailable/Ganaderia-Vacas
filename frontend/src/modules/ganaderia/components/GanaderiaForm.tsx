@@ -17,7 +17,7 @@ export const GanaderiaForm = ({ isOpen, onClose, ganaderiaToEdit }: GanaderiaFor
     const { refreshGanaderia, selectGanaderia } = useGanaderia();
     const toast = useToast();
     const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const cancelRef = useRef<any>(null);
 
     useEffect(() => {
         if (ganaderiaToEdit) {
