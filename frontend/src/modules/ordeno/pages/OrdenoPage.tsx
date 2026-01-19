@@ -513,7 +513,7 @@ export const OrdenoPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {vacas.filter(v => v.estado === 'ACTIVA').map((vaca, index) => (
+                                    {vacas.filter(v => v.estado === 'ACTIVA' && v.tipo === 'VACA').map((vaca, index) => (
                                         <tr key={vaca.vaca_id} style={{ borderBottom: '1px solid #EDF2F7' }}>
                                             <td style={{ padding: '16px', color: '#718096', fontSize: '14px' }}>{index + 1}</td>
                                             <td style={{ padding: '16px' }}>

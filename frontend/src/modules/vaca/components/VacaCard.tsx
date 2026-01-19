@@ -1,4 +1,4 @@
-import { Badge, Text, HStack, IconButton, Menu, MenuButton, MenuList, MenuItem, VStack } from '@chakra-ui/react';
+import { Badge, Text, HStack, IconButton, Menu, MenuButton, MenuList, MenuItem, VStack, Portal } from '@chakra-ui/react';
 import { FiMoreVertical, FiEdit, FiTrash } from 'react-icons/fi';
 import { type Vaca } from '../models';
 import { MotionBox } from '../../../shared/ui/MotionBox';
@@ -78,11 +78,43 @@ export const VacaCard = ({ vaca, onEdit, onDelete, onClick }: VacaCardProps) => 
                             color="gray.400"
                             _hover={{ color: 'gray.600', bg: 'gray.50' }}
                             borderRadius="full"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.nativeEvent.stopImmediatePropagation();
+                            }}
                         />
-                        <MenuList borderRadius="xl" shadow="lg" border="none" zIndex={10}>
-                            {onEdit && <MenuItem icon={<FiEdit />} onClick={(e) => onEdit?.(vaca, e)} fontSize="sm">Editar</MenuItem>}
-                            {onDelete && <MenuItem icon={<FiTrash />} color="red.500" onClick={(e) => onDelete?.(vaca, e)} fontSize="sm">Eliminar</MenuItem>}
-                        </MenuList>
+                        <Portal>
+                            <MenuList
+                                borderRadius="xl"
+                                shadow="2xl"
+                                border="none"
+                                zIndex={9999}
+                                minW="180px"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {onEdit && (
+                                    <MenuItem
+                                        icon={<FiEdit />}
+                                        onClick={(e) => onEdit?.(vaca, e)}
+                                        fontSize="sm"
+                                        py={3}
+                                    >
+                                        Editar
+                                    </MenuItem>
+                                )}
+                                {onDelete && (
+                                    <MenuItem
+                                        icon={<FiTrash />}
+                                        color="red.500"
+                                        onClick={(e) => onDelete?.(vaca, e)}
+                                        fontSize="sm"
+                                        py={3}
+                                    >
+                                        Eliminar
+                                    </MenuItem>
+                                )}
+                            </MenuList>
+                        </Portal>
                     </Menu>
                 )}
             </HStack>
