@@ -10,34 +10,39 @@ import { ProtectedRoute } from './modules/auth/ProtectedRoute';
 import { PublicRoute } from './modules/auth/PublicRoute';
 import { ProfilePage } from './modules/auth/pages/ProfileInfoPage';
 import { GanaderiaProvider } from './shared/context/GanaderiaContext';
+import { AdminAccessPage } from './modules/superadmin/pages/AdminAccessPage';
+import { AdminProvider } from './modules/superadmin/context/AdminContext';
 
 function App() {
   return (
     <AuthProvider>
       <GanaderiaProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes (Redirect to dashboard if logged in) */}
-            <Route element={<PublicRoute />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Route>
-
-            {/* Private Routes (Redirect to login if NOT logged in) */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/vacas" element={<VacasPage />} />
-                <Route path="/ordeno" element={<OrdenoPage />} />
-                <Route path="/ordenos" element={<OrdenoPage />} />
-                <Route path="/perfil" element={<ProfilePage />} />
+        <AdminProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes (Redirect to dashboard if logged in) */}
+              <Route element={<PublicRoute />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
               </Route>
-            </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Private Routes (Redirect to login if NOT logged in) */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<DashboardPage />} />
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/vacas" element={<VacasPage />} />
+                  <Route path="/ordeno" element={<OrdenoPage />} />
+                  <Route path="/ordenos" element={<OrdenoPage />} />
+                  <Route path="/perfil" element={<ProfilePage />} />
+                  <Route path="/admin/access" element={<AdminAccessPage />} />
+                </Route>
+              </Route>
+
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AdminProvider>
       </GanaderiaProvider>
     </AuthProvider>
   )

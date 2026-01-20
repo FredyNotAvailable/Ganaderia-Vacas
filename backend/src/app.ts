@@ -6,6 +6,7 @@ import { perfilRouter } from './modules/perfil/presentation/perfil.routes';
 import { ganaderiaRouter } from './modules/ganaderia/presentation/ganaderia.routes';
 import { vacaRouter } from './modules/vaca/presentation/vaca.routes';
 import { ordenoRouter } from './modules/ordeno/presentation/ordeno.routes';
+import { adminRouter } from './modules/admin/presentation/admin.routes';
 
 // Middleware
 import { requestLogger } from './shared/middleware/request-logger.middleware';
@@ -49,6 +50,7 @@ app.use('/api/perfil', perfilRouter);
 app.use('/api/ganaderia', ganaderiaRouter);
 app.use('/api/vacas', vacaRouter);
 app.use('/api/ordenos', ordenoRouter);
+app.use('/api/admin', adminRouter);
 
 // Global Error Handler
 app.use(errorHandler);

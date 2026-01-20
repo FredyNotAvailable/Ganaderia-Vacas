@@ -1,9 +1,9 @@
-﻿import { Heading, Text, VStack, Button, Box, SimpleGrid, Flex, useDisclosure, IconButton, HStack, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, FormControl, Input, Menu, MenuButton, MenuList, MenuItem, Icon, FormLabel } from '@chakra-ui/react';
+﻿import { Heading, Text, VStack, Button, Box, SimpleGrid, Flex, useDisclosure, IconButton, HStack, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useToast, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, FormControl, Input, Menu, MenuButton, MenuList, MenuItem, Icon, FormLabel, Badge } from '@chakra-ui/react';
 import { useAuth } from '../AuthContext';
 import { ROLES_SISTEMA } from '../../../shared/constants/permisos';
 import { MotionBox } from '../../../shared/ui/MotionBox';
 import { useGanaderia } from '../../../shared/context/GanaderiaContext';
-import { FiLogOut, FiPlus, FiEdit2, FiTrash2, FiSettings, FiUser, FiAtSign, FiInfo } from 'react-icons/fi';
+import { FiLogOut, FiPlus, FiEdit2, FiTrash2, FiSettings, FiUser, FiAtSign, FiInfo, FiShield } from 'react-icons/fi';
 import { GanaderiaForm } from '../../ganaderia/components/GanaderiaForm';
 import { FincaInfoModal } from '../../../shared/components/FincaInfoModal';
 import { perfilService } from '../../perfil/services/perfil.service';
@@ -83,8 +83,21 @@ export const ProfilePage = () => {
         <MotionBox initial={{ opacity: 0 }} animate={{ opacity: 1 }} w="full">
             <Box w="full" py={{ base: 4, md: 8 }}>
                 <Flex justify="space-between" align="center" mb={6}>
-                    <VStack align="start" spacing={0}>
-                        <Heading size="lg" color="gray.800" fontWeight="bold">Perfil</Heading>
+                    <VStack align="start" spacing={1}>
+                        {perfil?.rol_sistema && (
+                            <Badge
+                                colorScheme={perfil.rol_sistema === ROLES_SISTEMA.SUPERADMIN ? 'purple' : 'gray'}
+                                variant="subtle"
+                                fontSize="10px"
+                                borderRadius="md"
+                                px={2}
+                            >
+                                {perfil.rol_sistema}
+                            </Badge>
+                        )}
+                        <Heading size="lg" color="gray.800" fontWeight="bold">
+                            {perfil?.nombre || 'Perfil'}
+                        </Heading>
                     </VStack>
                     <Menu isLazy>
                         <MenuButton
@@ -118,6 +131,23 @@ export const ProfilePage = () => {
                                 <Text color="gray.800" fontWeight="medium" fontSize="md">Nombre</Text>
                             </HStack>
                             <Text color="gray.400" fontSize="md">{perfil?.nombre || '---'}</Text>
+                        </Flex>
+                        <Box h="1px" w="full" bg="gray.50" ml={12} />
+                        <Flex w="full" px={4} py={3.5} align="center" justify="space-between">
+                            <HStack spacing={3}>
+                                <Flex color="gray.400" align="center" justify="center" w={8} h={8}>
+                                    <Icon as={FiShield} boxSize={5} />
+                                </Flex>
+                                <Text color="gray.800" fontWeight="medium" fontSize="md">Rol de Sistema</Text>
+                            </HStack>
+                            <Badge
+                                colorScheme={perfil?.rol_sistema === ROLES_SISTEMA.SUPERADMIN ? 'purple' : 'gray'}
+                                variant="subtle"
+                                borderRadius="full"
+                                px={3}
+                            >
+                                {perfil?.rol_sistema || 'USUARIO'}
+                            </Badge>
                         </Flex>
                         <Box h="1px" w="full" bg="gray.50" ml={12} />
                         <Flex w="full" px={4} py={3.5} align="center" justify="space-between">

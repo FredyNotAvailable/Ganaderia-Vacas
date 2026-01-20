@@ -1,17 +1,19 @@
 import { Box, Flex, Icon, Text, Container, VStack, Link, Menu, MenuButton, MenuList, MenuItem, MenuDivider, Button, HStack } from '@chakra-ui/react';
 import { NavLink as RouterLink, Outlet, useLocation } from 'react-router-dom';
-import { FiHome, FiDatabase, FiDroplet, FiUser, FiAlertCircle, FiChevronDown, FiPlus } from 'react-icons/fi';
+import { FiHome, FiDatabase, FiDroplet, FiUser, FiAlertCircle, FiChevronDown, FiPlus, FiShield } from 'react-icons/fi';
 import { MotionBox } from '../ui/MotionBox';
 import { useGanaderia } from '../context/GanaderiaContext';
 import { useFincaActiva } from '../hooks/useFincaActiva';
+import { useAuth } from '../../modules/auth/AuthContext';
 
 export const MainLayout = () => {
     const { ganaderia, loading } = useGanaderia();
     const { misFincas, fincasVinculadas, cambiarFinca } = useFincaActiva();
+    const { perfil } = useAuth();
     const location = useLocation();
 
-    // Hide selector in profile page
-    const showSelector = !location.pathname.startsWith('/perfil');
+    // Hide selector in profile and admin pages
+    const showSelector = !location.pathname.startsWith('/perfil') && !location.pathname.startsWith('/admin');
 
     return (
         <Flex minH="100vh" bg="gray.50" overflowX="hidden">
@@ -35,6 +37,9 @@ export const MainLayout = () => {
                     <SidebarItem to="/vacas" icon={FiDatabase} label="Vacas" />
                     <SidebarItem to="/ordeno" icon={FiDroplet} label="Ordeños" />
                     <SidebarItem to="/perfil" icon={FiUser} label="Perfil" />
+                    {perfil?.rol_sistema === 'SUPERADMIN' && (
+                        <SidebarItem to="/admin/access" icon={FiShield} label="Admin" />
+                    )}
                 </VStack>
             </Box>
 
@@ -241,6 +246,9 @@ export const MainLayout = () => {
                             <BottomNavItem to="/vacas" icon={FiDatabase} label="Vacas" />
                             <BottomNavItem to="/ordeno" icon={FiDroplet} label="Ordeños" />
                             <BottomNavItem to="/perfil" icon={FiUser} label="Perfil" />
+                            {perfil?.rol_sistema === 'SUPERADMIN' && (
+                                <BottomNavItem to="/admin/access" icon={FiShield} label="Admin" />
+                            )}
                         </Flex>
                     </MotionBox>
                 </Container>
